@@ -1,1 +1,24 @@
 /* Styles go here */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.main {
+  height: 100vh;
+  background-color: #0000000f;
+  padding-top: 5rem;
+}
+
+.active {
+  border-color: #0000000f !important;
+  background-color: #0000000f !important;
+}
+
+.show {
+  background-color: rgb(240, 240, 240) !important;
+}
+
+.row {
+  margin-top: 3rem;
+}

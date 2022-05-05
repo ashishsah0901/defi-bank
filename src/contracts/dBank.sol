@@ -19,7 +19,7 @@ contract dBank {
   event Borrow(address indexed user, uint collateralEtherAmount, uint borrowedTokenAmount);
   event PayOff(address indexed user, uint fee);
 
-  constructor(Token _token) public {
+  constructor(Token _token) {
     token = _token;
   }
 

@@ -97,12 +97,12 @@ class App extends Component {
   render() {
     return (
       <div className="text-monospace">
-        <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-          <a className="navbar-brand col-sm-3 col-md-2 mr-0" href="#" target="_blank" rel="noopener noreferrer">
+        <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-2 shadow mb-0">
+          <a className="navbar-brand col-sm-3 col-md-2 mr-0" href="/" target="_blank" rel="noopener noreferrer">
             <b>d₿ank</b>
           </a>
         </nav>
-        <div className="container-fluid mt-5 text-center">
+        <div className="container-fluid text-center main">
           <br></br>
           <h1>Welcome to d₿ank</h1>
           <h2>{this.state.account}</h2>
@@ -110,7 +110,7 @@ class App extends Component {
           <div className="row">
             <main role="main" className="col-lg-12 d-flex text-center">
               <div className="content mr-auto ml-auto">
-                <Tabs defaultActiveKey="profile" id="uncontrolled-tab-example">
+                <Tabs defaultActiveKey="deposit" id="uncontrolled-tab-example">
                   <Tab eventKey="deposit" title="Deposit">
                     <div>
                       <br></br>
@@ -138,7 +138,7 @@ class App extends Component {
                               this.depositAmount = input;
                             }}
                             className="form-control form-control-md"
-                            placeholder="amount..."
+                            placeholder="Amount..."
                             required
                           />
                         </div>
@@ -186,7 +186,7 @@ class App extends Component {
                               this.borrowAmount = input;
                             }}
                             className="form-control form-control-md"
-                            placeholder="amount..."
+                            placeholder="Amount..."
                             required
                           />
                         </div>
