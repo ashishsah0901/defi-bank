@@ -52,7 +52,7 @@
   "sourceMap": "68:367:4:-:0;;;116:10;93:33;;;;;;;;;;;;;;;;;;;;68:367;;;;;;;;;;;;;;;;",
   "deployedSourceMap": "68:367:4:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;131:36;;;:::i;:::-;;;;;;;;;;;;;;;;;;;93:33;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;327:105;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;131:36;;;;:::o;93:33::-;;;;;;;;;;;;:::o;327:105::-;233:5;;;;;;;;;;219:19;;:10;:19;;;203:104;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;417:9:::1;390:24;:36;;;;327:105:::0;:::o",
   "source": "// SPDX-License-Identifier: MIT\r\npragma solidity >=0.6.0 <0.8.0;\r\n\r\ncontract Migrations {\r\n  address public owner = msg.sender;\r\n  uint public last_completed_migration;\r\n\r\n  modifier restricted() {\r\n    require(\r\n      msg.sender == owner,\r\n      \"This function is restricted to the contract's owner\"\r\n    );\r\n    _;\r\n  }\r\n\r\n  function setCompleted(uint completed) public restricted {\r\n    last_completed_migration = completed;\r\n  }\r\n}",
-  "sourcePath": "C:\\Users\\HP\\LearningBlockchain\\dbank\\src\\contracts\\Migrations.sol",
+  "sourcePath": "C:\\Users\\Princy\\Documents\\wtl-miniproject\\defi-bank\\src\\contracts\\Migrations.sol",
   "ast": {
     "absolutePath": "project:/src/contracts/Migrations.sol",
     "exportedSymbols": {
@@ -888,15 +888,16 @@
     "version": "0.7.6+commit.7338295f.Emscripten.clang"
   },
   "networks": {
-    "1612114362544": {
+    "1651392606710": {
       "events": {},
       "links": {},
-      "address": "0x149b7606D771dC57971a5327348B4FddE2cffF67",
-      "transactionHash": "0x649f51c067da787b9722db2f1f4104be2ae6e45d59d754b3d7ddcccc87462f35"
+      "address": "0x929f16bF33F440511004d6E79e104b7EB057b2Ba",
+      "transactionHash": "0x7528ac040a4835e2ef445e76403a328c93255125617844d3a509109062551a5c"
     },
-    "1612197162124": {
+    "1651393007662": {
       "events": {},
       "links": {},
+<<<<<<< HEAD
       "address": "0xD03e56ff2B6e8f225A1f3211D5Ff076e2AE598b2",
       "transactionHash": "0x7e763edc50864b3fea639449a66225d6b1182be0131267417fba8241d78d607f"
     },
@@ -915,6 +916,14 @@
   },
   "schemaVersion": "3.4.7",
   "updatedAt": "2022-04-29T09:23:04.299Z",
+=======
+      "address": "0x287ADF16c6953D0C04716C024461163A34224257",
+      "transactionHash": "0x6fef4296d6533d39c23aced733a047ac97697d0fe7e49a40c4ba58ee431a1a3a"
+    }
+  },
+  "schemaVersion": "3.4.4",
+  "updatedAt": "2022-05-01T08:19:39.517Z",
+>>>>>>> 616a5fc5111bf0153a57574db788d5a79256ce87
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

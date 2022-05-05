@@ -252,7 +252,11 @@
   "sourceMap": "93:2704:6:-:0;;;702:53;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;743:6;735:5;;:14;;;;;;;;;;;;;;;;;;702:53;93:2704;;;;;;",
   "deployedSourceMap": "93:2704:6:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;190:46;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;1207:641;;;;;;;;;;;;;:::i;:::-;;2343:451;;;;;;;;;;;;;:::i;:::-;;295:43;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;241:47;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;343:42;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;761:440;;;:::i;:::-;;1854:483;;;:::i;:::-;;141:44;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;190:46;;;;;;;;;;;;;;;;;:::o;1207:641::-;1274:4;1249:29;;:11;:23;1261:10;1249:23;;;;;;;;;;;;;;;;;;;;;;;;;:29;;;1241:68;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1316:16;1335:14;:26;1350:10;1335:26;;;;;;;;;;;;;;;;1316:45;;1370:16;1407:12;:24;1420:10;1407:24;;;;;;;;;;;;;;;;1389:15;:42;1370:61;;1440:22;1506:4;1477:14;:26;1492:10;1477:26;;;;;;;;;;;;;;;;:33;;;;;;1465:8;:46;1440:71;;1518:13;1554:11;1534:17;:31;1518:47;;1574:10;:19;;:47;1594:14;:26;1609:10;1594:26;;;;;;;;;;;;;;;;1574:47;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1628:5;;;;;;;;;;:10;;;1639;1651:8;1628:32;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1696:1;1669:12;:24;1682:10;1669:24;;;;;;;;;;;;;;;:28;;;;1733:1;1704:14;:26;1719:10;1704:26;;;;;;;;;;;;;;;:30;;;;1767:5;1741:11;:23;1753:10;1741:23;;;;;;;;;;;;;;;;:31;;;;;;;;;;;;;;;;;;1795:10;1786:56;;;1807:11;1820;1833:8;1786:56;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1207:641;;;;:::o;2343:451::-;2409:4;2383:30;;:10;:22;2394:10;2383:22;;;;;;;;;;;;;;;;;;;;;;;;;:30;;;2375:65;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2455:5;;;;;;;;;;:18;;;2474:10;2494:4;2529:1;2501:15;:27;2517:10;2501:27;;;;;;;;;;;;;;;;:29;;;;;;2455:76;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2447:116;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2572:8;2611:2;2583:15;:27;2599:10;2583:27;;;;;;;;;;;;;;;;:30;;;;;;2572:41;;2622:10;:19;;:52;2670:3;2642:15;:27;2658:10;2642:27;;;;;;;;;;;;;;;;:31;2622:52;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2713:1;2683:15;:27;2699:10;2683:27;;;;;;;;;;;;;;;:31;;;;2746:5;2721:10;:22;2732:10;2721:22;;;;;;;;;;;;;;;;:30;;;;;;;;;;;;;;;;;;2772:10;2765:23;;;2784:3;2765:23;;;;;;;;;;;;;;;;;;2343:451;:::o;295:43::-;;;;;;;;;;;;;;;;;;;;;;:::o;241:47::-;;;;;;;;;;;;;;;;;:::o;343:42::-;;;;;;;;;;;;;;;;;;;;;;:::o;761:440::-;837:5;810:32;;:11;:23;822:10;810:23;;;;;;;;;;;;;;;;;;;;;;;;;:32;;;802:74;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;902:4;891:9;:15;;883:62;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1012:9;983:14;:26;998:10;983:26;;;;;;;;;;;;;;;;:38;954:14;:26;969:10;954:26;;;;;;;;;;;;;;;:67;;;;1082:15;1055:12;:24;1068:10;1055:24;;;;;;;;;;;;;;;;:42;1028:12;:24;1041:10;1028:24;;;;;;;;;;;;;;;:69;;;;1132:4;1106:11;:23;1118:10;1106:23;;;;;;;;;;;;;;;;:30;;;;;;;;;;;;;;;;;;1156:10;1148:47;;;1168:9;1179:15;1148:47;;;;;;;;;;;;;;;;;;;;;;;;761:440::o;1854:483::-;1913:4;1902:9;:15;;1894:65;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2000:5;1974:31;;:10;:22;1985:10;1974:22;;;;;;;;;;;;;;;;;;;;;;;;;:31;;;1966:69;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2104:9;2074:15;:27;2090:10;2074:27;;;;;;;;;;;;;;;;:39;2044:15;:27;2060:10;2044:27;;;;;;;;;;;;;;;:69;;;;2122:17;2172:1;2142:15;:27;2158:10;2142:27;;;;;;;;;;;;;;;;:31;;;;;;2122:51;;2182:5;;;;;;;;;;:10;;;2193;2205:12;2182:36;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2252:4;2227:10;:22;2238:10;2227:22;;;;;;;;;;;;;;;;:29;;;;;;;;;;;;;;;;;;2277:10;2270:61;;;2289:15;:27;2305:10;2289:27;;;;;;;;;;;;;;;;2318:12;2270:61;;;;;;;;;;;;;;;;;;;;;;;;1854:483;:::o;141:44::-;;;;;;;;;;;;;;;;;:::o",
   "source": "// SPDX-License-Identifier: MIT\r\npragma solidity >=0.6.0 <0.8.0;\r\n\r\nimport \"./Token.sol\";\r\n\r\ncontract dBank {\r\n\r\n  Token private token;\r\n\r\n  mapping(address => uint) public depositStart;\r\n  mapping(address => uint) public etherBalanceOf;\r\n  mapping(address => uint) public collateralEther;\r\n\r\n  mapping(address => bool) public isDeposited;\r\n  mapping(address => bool) public isBorrowed;\r\n\r\n  event Deposit(address indexed user, uint etherAmount, uint timeStart);\r\n  event Withdraw(address indexed user, uint etherAmount, uint depositTime, uint interest);\r\n  event Borrow(address indexed user, uint collateralEtherAmount, uint borrowedTokenAmount);\r\n  event PayOff(address indexed user, uint fee);\r\n\r\n  constructor(Token _token) {\r\n    token = _token;\r\n  }\r\n\r\n  function deposit() payable public {\r\n    require(isDeposited[msg.sender] == false, 'Error, deposit already active');\r\n    require(msg.value>=1e16, 'Error, deposit must be >= 0.01 ETH');\r\n\r\n    etherBalanceOf[msg.sender] = etherBalanceOf[msg.sender] + msg.value;\r\n    depositStart[msg.sender] = depositStart[msg.sender] + block.timestamp;\r\n\r\n    isDeposited[msg.sender] = true;\r\n    emit Deposit(msg.sender, msg.value, block.timestamp);\r\n  }\r\n\r\n  function withdraw() public {\r\n    require(isDeposited[msg.sender]==true, 'Error, no previous deposit');\r\n    uint userBalance = etherBalanceOf[msg.sender];\r\n\r\n    uint depositTime = block.timestamp - depositStart[msg.sender];\r\n\r\n    uint interestPerSecond = 31668017 * (etherBalanceOf[msg.sender] / 1e16);\r\n    uint interest = interestPerSecond * depositTime;\r\n\r\n    msg.sender.transfer(etherBalanceOf[msg.sender]);\r\n    token.mint(msg.sender, interest);\r\n\r\n    depositStart[msg.sender] = 0;\r\n    etherBalanceOf[msg.sender] = 0;\r\n    isDeposited[msg.sender] = false;\r\n\r\n    emit Withdraw(msg.sender, userBalance, depositTime, interest);\r\n  }\r\n\r\n  function borrow() payable public {\r\n    require(msg.value>=1e16, 'Error, collateral must be >= 0.01 ETH');\r\n    require(isBorrowed[msg.sender] == false, 'Error, loan already taken');\r\n\r\n    collateralEther[msg.sender] = collateralEther[msg.sender] + msg.value;\r\n\r\n    uint tokensToMint = collateralEther[msg.sender] / 2;\r\n\r\n    token.mint(msg.sender, tokensToMint);\r\n\r\n    isBorrowed[msg.sender] = true;\r\n\r\n    emit Borrow(msg.sender, collateralEther[msg.sender], tokensToMint);\r\n  }\r\n\r\n  function payOff() public {\r\n    require(isBorrowed[msg.sender] == true, 'Error, loan not active');\r\n    require(token.transferFrom(msg.sender, address(this), collateralEther[msg.sender]/2), \"Error, can't receive tokens\");\r\n\r\n    uint fee = collateralEther[msg.sender]/10;\r\n\r\n    msg.sender.transfer(collateralEther[msg.sender]-fee);\r\n\r\n    collateralEther[msg.sender] = 0;\r\n    isBorrowed[msg.sender] = false;\r\n\r\n    emit PayOff(msg.sender, fee);\r\n  }\r\n}\r\n",
+<<<<<<< HEAD
   "sourcePath": "C:\\Users\\HP\\LearningBlockchain\\dbank\\src\\contracts\\dBank.sol",
+=======
+  "sourcePath": "C:\\Users\\Princy\\Documents\\wtl-miniproject\\defi-bank\\src\\contracts\\dBank.sol",
+>>>>>>> 616a5fc5111bf0153a57574db788d5a79256ce87
   "ast": {
     "absolutePath": "project:/src/contracts/dBank.sol",
     "exportedSymbols": {
@@ -10258,223 +10262,10 @@
     "version": "0.7.6+commit.7338295f.Emscripten.clang"
   },
   "networks": {
-    "1612114362544": {
-      "events": {
-        "0xe1979fe4c35e0cef342fef5668e2c8e7a7e9f5d5d1ca8fee0ac6c427fa4153af": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "user",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "collateralEtherAmount",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "borrowedTokenAmount",
-              "type": "uint256"
-            }
-          ],
-          "name": "Borrow",
-          "type": "event"
-        },
-        "0x90890809c654f11d6e72a28fa60149770a0d11ec6c92319d6ceb2bb0a4ea1a15": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "user",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "etherAmount",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "timeStart",
-              "type": "uint256"
-            }
-          ],
-          "name": "Deposit",
-          "type": "event"
-        },
-        "0xfd9bbd044fa427970e4d882ebbb4a89ce422dc29b23f2777a14a93ecdf42c644": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "user",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "fee",
-              "type": "uint256"
-            }
-          ],
-          "name": "PayOff",
-          "type": "event"
-        },
-        "0x02f25270a4d87bea75db541cdfe559334a275b4a233520ed6c0a2429667cca94": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "user",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "etherAmount",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "depositTime",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "interest",
-              "type": "uint256"
-            }
-          ],
-          "name": "Withdraw",
-          "type": "event"
-        }
-      },
-      "links": {},
-      "address": "0x4C1A5632Ab4288B98a719d6bAe4c3297F610371c",
-      "transactionHash": "0xf8f014855ac51a661bc01817520f7a228882bd9a5774fa0077b612cd958f69fb"
-    },
-    "1612197162124": {
-      "events": {
-        "0xe1979fe4c35e0cef342fef5668e2c8e7a7e9f5d5d1ca8fee0ac6c427fa4153af": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "user",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "collateralEtherAmount",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "borrowedTokenAmount",
-              "type": "uint256"
-            }
-          ],
-          "name": "Borrow",
-          "type": "event"
-        },
-        "0x90890809c654f11d6e72a28fa60149770a0d11ec6c92319d6ceb2bb0a4ea1a15": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "user",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "etherAmount",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "timeStart",
-              "type": "uint256"
-            }
-          ],
-          "name": "Deposit",
-          "type": "event"
-        },
-        "0xfd9bbd044fa427970e4d882ebbb4a89ce422dc29b23f2777a14a93ecdf42c644": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "user",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "fee",
-              "type": "uint256"
-            }
-          ],
-          "name": "PayOff",
-          "type": "event"
-        },
-        "0x02f25270a4d87bea75db541cdfe559334a275b4a233520ed6c0a2429667cca94": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "user",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "etherAmount",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "depositTime",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "interest",
-              "type": "uint256"
-            }
-          ],
-          "name": "Withdraw",
-          "type": "event"
-        }
-      },
-      "links": {},
-      "address": "0x1Db184d8324D258546fe71c7cdEc31eDcc6DCCc7",
-      "transactionHash": "0xb386e61e01dddce3b85c50694c973a6c87d850890dde9b571cd961ed894e39d9"
-    },
-    "1651121509055": {
+    "1651393007662": {
       "events": {},
       "links": {},
+<<<<<<< HEAD
       "address": "0x70948D4d35FD897100Ea9B144A06C6867Fb74134",
       "transactionHash": "0x72445d442f52b13591e50f106462ef1fb2e27f34ce727921fa7d61e18716a1d1"
     },
@@ -10487,6 +10278,14 @@
   },
   "schemaVersion": "3.4.7",
   "updatedAt": "2022-04-29T09:23:04.287Z",
+=======
+      "address": "0x3e7C4B5B1EEF86991b31B980Ae3aA6cbB820F514",
+      "transactionHash": "0xa54e015abf5666055fd5451e323920a182187911bc1e47ce06e0d2d52e5a6a4a"
+    }
+  },
+  "schemaVersion": "3.4.4",
+  "updatedAt": "2022-05-01T08:19:39.499Z",
+>>>>>>> 616a5fc5111bf0153a57574db788d5a79256ce87
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
